@@ -12,16 +12,16 @@
   --Showing how many called clients said "yes" or "no", and their percentages
       SELECT y,
            COUNT(*) AS count,
-           ROUND(100.0 * COUNT(*) / (SELECT COUNT(*) FROM bank_additional_full), 2) AS pct
+           ROUND(100.0 * COUNT(*) / (SELECT COUNT(*) FROM bankcampaign), 2) AS pct
       FROM bankcampaign
       GROUP BY y;
 
   --Comparing subscription rates for clients with different previous‐campaign outcomes
-      SELECT poutcome,
-         COUNT(*) AS total,
-         SUM(CASE WHEN y = 'yes' THEN 1 ELSE 0 END) AS successes,
-         ROUND(100.0 * SUM(CASE WHEN y = 'yes' THEN 1 ELSE 0 END) / COUNT(*), 2) AS success_pct
+   
+  SELECT poutcome,
+      COUNT(*) AS aantal
       FROM bankcampaign
+      WHERE poutcome IN ('nonexistent', 'success', 'failure')
       GROUP BY poutcome;
 
 
