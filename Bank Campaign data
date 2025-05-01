@@ -16,7 +16,7 @@
       FROM bankcampaign
       GROUP BY y;
 
-  --Comparing subscription rates for clients with different previous‐campaign outcomes
+  --Counting the different results from the previous campaigns
    
   SELECT poutcome,
       COUNT(*) AS aantal
