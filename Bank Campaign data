@@ -1,0 +1,34 @@
+/*dataset; Bank marketing campaigns dataset | Opening Deposit
+  source; https://www.kaggle.com/datasets/volodymyrgavrysh/bank-marketing-campaigns-dataset
+  queried using dbbrowser for SQLite */
+
+--confirming 41188 contacts are loaded
+
+    SELECT COUNT(*) AS total_records
+    FROM bank_additional_full;
+
+--campaign outcome
+
+  --Showing how many called clients said "yes" or "no", and their percentages
+      SELECT y,
+           COUNT(*) AS count,
+           ROUND(100.0 * COUNT(*) / (SELECT COUNT(*) FROM bank_additional_full), 2) AS pct
+      FROM bankcampaign
+      GROUP BY y;
+
+  --Comparing subscription rates for clients with different previous‐campaign outcomes
+      SELECT poutcome,
+         COUNT(*) AS total,
+         SUM(CASE WHEN y = 'yes' THEN 1 ELSE 0 END) AS successes,
+         ROUND(100.0 * SUM(CASE WHEN y = 'yes' THEN 1 ELSE 0 END) / COUNT(*), 2) AS success_pct
+      FROM bankcampaign
+      GROUP BY poutcome;
+
+
+  --Evaluating which medium (cellular vs. telephone) yields higher term-deposit uptake. 
+    SELECT contact,
+       COUNT(*) AS total,
+       SUM(CASE WHEN y = 'yes' THEN 1 ELSE 0 END) AS successes,
+       ROUND(100.0 * SUM(CASE WHEN y = 'yes' THEN 1 ELSE 0 END) / COUNT(*), 2) AS success_pct
+    FROM bankcampaign
+    GROUP BY contact;
