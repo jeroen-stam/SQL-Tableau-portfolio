@@ -1,0 +1,100 @@
+--deleting all the orders that were cancelled
+DELETE FROM bmxstickerraw
+WHERE lower(order_verstuurd) = 'cancel';
+
+
+
+CREATE TABLE bmx_orders_cleaned AS
+SELECT
+  OrderID,
+  ontwerp_verstuurd,
+  order_verstuurd,
+  processtijd,
+
+  -- creating a binary variable for when a sticker was ordered from the existing "sticker" column, containing different letters and values
+  CASE 
+    WHEN Sticker IS NOT NULL AND TRIM(Sticker) <> '' THEN 1 
+    ELSE 0 
+  END AS sticker_besteld,
+
+ -- creating a binary variable for when a sideplate was ordered from the existing "side_plate" column, containing different letters and values
+  CASE 
+    WHEN side_plate IS NOT NULL AND TRIM(side_plate) <> '' THEN 1 
+    ELSE 0 
+  END AS sideplate_besteld,
+
+  --deriving the amount of stickers ordered from the sticker column
+  CASE
+    WHEN Sticker LIKE '30%' THEN 30
+    WHEN Sticker LIKE '29%' THEN 29
+    WHEN Sticker LIKE '28%' THEN 28
+    WHEN Sticker LIKE '27%' THEN 27
+    WHEN Sticker LIKE '26%' THEN 26
+    WHEN Sticker LIKE '25%' THEN 25
+    WHEN Sticker LIKE '24%' THEN 24
+    WHEN Sticker LIKE '23%' THEN 23
+    WHEN Sticker LIKE '22%' THEN 22
+    WHEN Sticker LIKE '21%' THEN 21
+    WHEN Sticker LIKE '20%' THEN 20
+    WHEN Sticker LIKE '19%' THEN 19
+    WHEN Sticker LIKE '18%' THEN 18
+    WHEN Sticker LIKE '17%' THEN 17
+    WHEN Sticker LIKE '16%' THEN 16
+    WHEN Sticker LIKE '15%' THEN 15
+    WHEN Sticker LIKE '14%' THEN 14
+    WHEN Sticker LIKE '13%' THEN 13
+    WHEN Sticker LIKE '12%' THEN 12
+    WHEN Sticker LIKE '11%' THEN 11
+    WHEN Sticker LIKE '10%' THEN 10
+    WHEN Sticker LIKE '9%' THEN 9
+    WHEN Sticker LIKE '8%' THEN 8
+    WHEN Sticker LIKE '7%' THEN 7
+    WHEN Sticker LIKE '6%' THEN 6
+    WHEN Sticker LIKE '5%' THEN 5
+    WHEN Sticker LIKE '4%' THEN 4
+    WHEN Sticker LIKE '3%' THEN 3
+    WHEN Sticker LIKE '2%' THEN 2
+    WHEN Sticker LIKE '1%' THEN 1
+    WHEN Sticker IS NOT NULL AND TRIM(Sticker) <> '' THEN 1
+    ELSE 0
+  END AS aantal_stickers,
+
+  -- deriving the amount of sideplates ordered from the side_plate column
+  CASE
+    WHEN side_plate LIKE '30%' THEN 30
+    WHEN side_plate LIKE '29%' THEN 29
+    WHEN side_plate LIKE '28%' THEN 28
+    WHEN side_plate LIKE '27%' THEN 27
+    WHEN side_plate LIKE '26%' THEN 26
+    WHEN side_plate LIKE '25%' THEN 25
+    WHEN side_plate LIKE '24%' THEN 24
+    WHEN side_plate LIKE '23%' THEN 23
+    WHEN side_plate LIKE '22%' THEN 22
+    WHEN side_plate LIKE '21%' THEN 21
+    WHEN side_plate LIKE '20%' THEN 20
+    WHEN side_plate LIKE '19%' THEN 19
+    WHEN side_plate LIKE '18%' THEN 18
+    WHEN side_plate LIKE '17%' THEN 17
+    WHEN side_plate LIKE '16%' THEN 16
+    WHEN side_plate LIKE '15%' THEN 15
+    WHEN side_plate LIKE '14%' THEN 14
+    WHEN side_plate LIKE '13%' THEN 13
+    WHEN side_plate LIKE '12%' THEN 12
+    WHEN side_plate LIKE '11%' THEN 11
+    WHEN side_plate LIKE '10%' THEN 10
+    WHEN side_plate LIKE '9%' THEN 9
+    WHEN side_plate LIKE '8%' THEN 8
+    WHEN side_plate LIKE '7%' THEN 7
+    WHEN side_plate LIKE '6%' THEN 6
+    WHEN side_plate LIKE '5%' THEN 5
+    WHEN side_plate LIKE '4%' THEN 4
+    WHEN side_plate LIKE '3%' THEN 3
+    WHEN side_plate LIKE '2%' THEN 2
+    WHEN side_plate LIKE '1%' THEN 1
+    WHEN side_plate IS NOT NULL AND TRIM(side_plate) <> '' THEN 1
+    ELSE 0
+  END AS aantal_sideplates
+
+
+
+FROM bmxstickerraw;
