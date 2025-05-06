@@ -4,38 +4,52 @@
 
 --Firstly, getting an idea for the amount of "power connections" per municipality
 
--- Getting the amount of electricity connections
+    -- Getting the amount of electricity connections
+    
+    WITH elektra AS (
+      SELECT 
+        WOONPLAATS,
+        SUM(AANSLUITINGEN_AANTAL) AS aansluitingen_elektra
+      FROM stedin_kvb2024
+      WHERE PRODUCTSOORT = 'ELK'
+      GROUP BY WOONPLAATS
+    ),
+    
+    -- Getting the amount of gas connections
+    gas AS (
+      SELECT 
+        WOONPLAATS,
+        SUM(AANSLUITINGEN_AANTAL) AS aansluitingen_gas
+      FROM stedin_kvb2024
+      WHERE PRODUCTSOORT = 'GAS'
+      GROUP BY WOONPLAATS
+    )
+    
+    -- Combining the two differents connections in one table, extended since SQLite does not have a full outer join command/function
+    SELECT 
+      COALESCE(e.WOONPLAATS, g.WOONPLAATS) AS WOONPLAATS,
+      COALESCE(aansluitingen_elektra, 0) AS aansluitingen_elektra,
+      COALESCE(aansluitingen_gas, 0) AS aansluitingen_gas
+    FROM elektra e
+    LEFT JOIN gas g ON e.WOONPLAATS = g.WOONPLAATS
+    UNION
+    SELECT 
+      COALESCE(e.WOONPLAATS, g.WOONPLAATS) AS WOONPLAATS,
+      COALESCE(aansluitingen_elektra, 0) AS aansluitingen_elektra,
+      COALESCE(aansluitingen_gas, 0) AS aansluitingen_gas
+    FROM gas g
+    LEFT JOIN elektra e ON e.WOONPLAATS = g.WOONPLAATS;
 
-WITH elektra AS (
-  SELECT 
-    WOONPLAATS,
-    SUM(AANSLUITINGEN_AANTAL) AS aansluitingen_elektra
-  FROM stedin_kvb2024
-  WHERE PRODUCTSOORT = 'ELK'
-  GROUP BY WOONPLAATS
-),
+--Now to analyze the average yearly usage for Gas and elektricity per energy connection for the different municipalities
 
--- Getting the amount of gas connections
-gas AS (
-  SELECT 
-    WOONPLAATS,
-    SUM(AANSLUITINGEN_AANTAL) AS aansluitingen_gas
-  FROM stedin_kvb2024
-  WHERE PRODUCTSOORT = 'GAS'
-  GROUP BY WOONPLAATS
-)
-
--- Combining the two differents connections in one table, extended since SQLite does not have a full outer join command/function
-SELECT 
-  COALESCE(e.WOONPLAATS, g.WOONPLAATS) AS WOONPLAATS,
-  COALESCE(aansluitingen_elektra, 0) AS aansluitingen_elektra,
-  COALESCE(aansluitingen_gas, 0) AS aansluitingen_gas
-FROM elektra e
-LEFT JOIN gas g ON e.WOONPLAATS = g.WOONPLAATS
-UNION
-SELECT 
-  COALESCE(e.WOONPLAATS, g.WOONPLAATS) AS WOONPLAATS,
-  COALESCE(aansluitingen_elektra, 0) AS aansluitingen_elektra,
-  COALESCE(aansluitingen_gas, 0) AS aansluitingen_gas
-FROM gas g
-LEFT JOIN elektra e ON e.WOONPLAATS = g.WOONPLAATS;
+  SELECT
+  WOONPLAATS,
+  PRODUCTSOORT,
+  ROUND(SUM(SJA_GEMIDDELD * AANSLUITINGEN_AANTAL) / NULLIF(SUM(AANSLUITINGEN_AANTAL), 0), 2) AS GEMIDDELD_SJA_PER_AANSLUITING
+FROM
+  stedin_kvb2024
+GROUP BY
+  WOONPLAATS,
+  PRODUCTSOORT
+ORDER BY
+  WOONPLAATS, PRODUCTSOORT;
