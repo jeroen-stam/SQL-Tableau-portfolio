@@ -9,6 +9,7 @@ Hello! thank you for checking out my repository containing solo projects for dat
 ### **Stedin**
 
 This analysis uses the publicly available "Stedin Kleinverbruiksdata 2024" to analyse first the amount of power connections for gas and electricity separately. After this, a study is conducted to rank the different municipalities in which Stedin is the network operator on their average yearly power usage per connection, again, seperately for gas and electricity. Lastly, the amount of "smart meters" and not "smart meters" are calculated to be shown in a pie chart, separately for gas and electricity once again. Data and queries carried out can be found in the file above. The visualisations of the analysis can be found in the link below:
+
 [Stedin power connection dashboard](https://public.tableau.com/shared/HQ79M92CF?:display_count=n&:origin=viz_share_link)
 
 ### **BMXsticker**
