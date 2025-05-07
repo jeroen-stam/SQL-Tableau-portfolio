@@ -6,6 +6,11 @@ Hello! thank you for checking out my repository containing solo projects for dat
 
 ## Projects:
 
+### **Stedin**
+
+This analysis uses the publicly available "Stedin Kleinverbruiksdata 2024" to analyse first the amount of power connections for gas and electricity separately. After a study is conducted to rank the different municipalities in which Stedin is the network operator on their average yearly power usage per connection, again, seperately for gas and electricity. The visualisations of the analysis can be found in the linnk below:
+[Stedin power connection dashboard](https://public.tableau.com/shared/HQ79M92CF?:display_count=n&:origin=viz_share_link)
+
 ### **BMXsticker**
 
  This project contains analysis done for the webshop "bmxsticker.eu" This is a small business run by my father. The business sells stickers for numberplates used in BMX racing, as well as needed side plates. 
