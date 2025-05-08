@@ -1,0 +1,135 @@
+#This is a project for familiarising myself with machine learning. For this, I use the data "Titanic - Machine Learning from Disaster" from Kaggle; https://www.kaggle.com/competitions/titanic/data?select=train.csv
+#Carried out in Google colab
+
+#importing the csv files "train" and "test" into 
+  from google.colab import files
+  uploaded = files.upload()
+
+
+#loading pandas libary and reading csv's as pandas dataframes, showing example data, and exploring the dataset, searching for missing values
+  import pandas as pd
+  train = pd.read_csv("train.csv")
+  test = pd.read_csv("test.csv")
+  train.head()
+  train.info()  
+  train.describe()
+  train.isnull().sum()
+
+# replacing 177 missing values for age with the median age
+  train['Age'] = train['Age'].fillna(train['Age'].median())
+
+# replacing missing values for the cabin variable with "unknown"
+  train['Cabin'] = train['Cabin'].fillna('Unknown')
+
+#changing cabin values to first letter only for ease
+  train['Cabin'] = train['Cabin'].str[0]
+
+# looking for the most common value for embarked
+  most_common_embarked = train['Embarked'].mode()[0]
+
+# replacing missing values for embarked with the most common value
+  train['Embarked'] = train['Embarked'].fillna(most_common_embarked)
+
+# changing categorical variables into dummy variables with numeric values to be able to use in machine larning models
+  train = pd.get_dummies(train, columns=['Embarked', 'Cabin'], drop_first=True)
+
+  print(train['Sex'].value_counts(dropna=False))
+  train['Sex'] = train['Sex'].astype(str)
+  train['Sex'] = train['Sex'].astype(str).str.strip().str.lower()
+  train['Sex'] = train['Sex'].map({'male': 0, 'female': 1})
+
+#dropping variables for ticket, name, and passengerID, since these are not needed for the model
+  train = train.drop(columns=['Name', 'Ticket', 'PassengerId'])
+
+#splitting features, so the model knows what we are predicting
+  X = train.drop('Survived', axis=1)
+  y = train['Survived']
+
+#creating train/test split
+  from sklearn.model_selection import train_test_split
+
+  X = train.drop('Survived', axis=1)
+  y = train['Survived']
+
+  X_train, X_val, y_train, y_val = train_test_split(
+      X, y, test_size=0.2, random_state=42
+)
+
+# trying predicion with the use of a logistic regression
+
+  
+  from sklearn.linear_model import LogisticRegression
+  from sklearn.metrics import accuracy_score, classification_report
+
+#creating model
+  model = LogisticRegression(max_iter=200)  # hightend iteration
+
+# Training on the right set
+  model.fit(X_train, y_train)
+
+# predicting on validation set 
+  y_pred = model.predict(X_val)
+
+# showing results
+  print("Accuracy:", accuracy_score(y_val, y_pred))
+  print("\nClassification report:\n", classification_report(y_val, y_pred))
+
+#accuracy comes out as  0.8156424581005587, using this model for now
+
+# repeating the same data manipulations for the test dataset
+
+  test.head()
+  test.info()  
+  test.describe()
+  test.isnull().sum()
+
+  test['Age'] = test['Age'].fillna(test['Age'].median())
+  test['Cabin'] = test['Cabin'].fillna('Unknown')
+  test['Cabin'] = test['Cabin'].str[0]
+  most_common_embarked = test['Embarked'].mode()[0]
+  test['Embarked'] = test['Embarked'].fillna(most_common_embarked)
+  test = pd.get_dummies(test, columns=['Embarked', 'Cabin'], drop_first=True)
+  test['Sex'] = test['Sex'].astype(str)
+  test['Sex'] = test['Sex'].astype(str).str.strip().str.lower()
+  test['Sex'] = test['Sex'].map({'male': 0, 'female': 1})
+  test = test.drop(columns=['Name', 'Ticket', 'PassengerId'])
+
+#adding missing column to test dataset
+missing_cols = set(X_train.columns) - set(test.columns)
+for col in missing_cols:
+    test[col] = 0
+
+#making sure columns are in same order
+  test = test[X_train.columns]
+
+#use trained model to carry out predictions
+  test_predictions = model.predict(test)
+
+#data contains Nan, testing for which column
+  test.isnull().sum()
+
+#replacing NaN in fare with median
+  test['Fare'] = test['Fare'].fillna(test['Fare'].median())
+
+#testing if NaN is gone
+  print(test.isnull().sum().sum())
+
+#re-running logistic regression predicter
+
+  test_predictions = model.predict(test)
+  
+# Load PassengerId from original test.csv
+passenger_ids = pd.read_csv("test.csv")['PassengerId']
+
+# Creating DataFrame with predictions
+submission = pd.DataFrame({
+    'PassengerId': passenger_ids,
+    'Survived': test_predictions
+})
+
+submission.to_csv("submission.csv", index=False)
+
+from google.colab import files
+files.download("submission.csv")
+
+
